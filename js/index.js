@@ -48,5 +48,5 @@ function errorOccurred() {
 
 //little foolproof (auto reconnection after page reload)
 if (performance.navigation.type == 1) {
-    connectionClosed();
+    connectionClosed(); 
 }
