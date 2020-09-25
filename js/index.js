@@ -3,15 +3,19 @@ const messages = document.getElementById('messages');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
 
-const ws = new WebSocket('ws://localhost:8080')
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.onopen = connectionOpen;
+ws.onmessage = messageReceived;
+ws.onerror = errorOccurred;
+ws.onclose = connectionClosed;
 
 function setStatus(value) {
-    status.innerHTML = value;
+    status.innerHTML = value.value;
 }
 
 function printMessage(value) {
     const li = document.createElement('li');
-
     li.innerHTML = value;
     messages.appendChild(li);
 }
@@ -19,30 +23,30 @@ function printMessage(value) {
 form.addEventListener('submit', e=>{
     e.preventDefault();
     ws.send(input.value);
-    input.value=''
+    printMessage("Message: "+input.value);
+    input.value='';
 })
-ws.onopen = connectionOpen;
-ws.onmessage = messageReceived;
-ws.onerror = errorOccurred;
-ws.onopen = connectionClosed;
 
-function connectionOpen() {
- console.log("Open");
+function connectionOpen(e) {
+    status.innerHTML = "CONNECTION OPEN";
+    if(e.data!=null){
+        printMessage("Message: "+e.data);
+    }  
 }
 
 function messageReceived(e) {
-  status.innerHTML = e.data;
-  console.log(e.data);
-  printMessage(e.data);
+    printMessage("Client Message: "+ e.data);
 }
 
-function connectionClose() {
- console.log("CLose");
+function connectionClosed(){
+    status.innerHTML = "CONNECTION CLOSE";
 }
 
-function errorOccurred(e) {
-    status.innerHTML = e.data;
+function errorOccurred() {
+    printMessage("CONNECTION ERROR");
 }
-function connectionClosed(e){
-    status.innerHTML=e.data;
+
+//little foolproof (auto reconnection after page reload)
+if (performance.navigation.type == 1) {
+    connectionClosed();
 }
