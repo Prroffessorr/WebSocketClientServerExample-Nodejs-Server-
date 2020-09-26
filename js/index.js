@@ -10,10 +10,6 @@ ws.onmessage = messageReceived;
 ws.onerror = errorOccurred;
 ws.onclose = connectionClosed;
 
-function setStatus(value) {
-    status.innerHTML = value.value;
-}
-
 function printMessage(value) {
     const li = document.createElement('li');
     li.innerHTML = value;
